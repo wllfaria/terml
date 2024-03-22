@@ -1,0 +1,4 @@
+(executable
+ (public_name crossterml)
+ (name main)
+ (libraries crossterml))
