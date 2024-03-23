@@ -1,1 +1,14 @@
-let write_ansi fmt = Printf.printf "\x1b[%s" fmt
+let csi = "\x1b["
+let reset = "0"
+let bold = "1"
+let faint = "2"
+let italic = "3"
+let underline = "4"
+let blink = "5"
+let reverse = "7"
+let conceal = "8"
+let strike = "9"
+let foreground = "38"
+let background = "48"
+let overline = "53"
+let escape fmt = Printf.printf "%s%s" csi fmt
