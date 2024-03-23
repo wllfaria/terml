@@ -1,8 +1,8 @@
+(* let () = [ hide (); move_to 10 10; set_style BlinkingBar; show () ] |> run *)
+
 open Crossterml
 
-let () =
-  let counter = ref 0 in
-  while !counter < 100_000_000 do
-    let () = Cursor.move (Cursor.MoveTo (10, 13)) in
-    incr counter
-  done
+let bold s = "1;" ^ s
+let orange s = "5;9" ^ s "Hello World" |> set_foreground_color Color.Yellow
+
+(* "asda" |> bold |> *)

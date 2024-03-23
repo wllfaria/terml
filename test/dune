@@ -1,2 +1,4 @@
 (test
- (name test_crossterml))
+ (name lib_test)
+ (libraries crossterml alcotest)
+ (modules lib_test color_test style_test))

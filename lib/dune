@@ -1,2 +1,3 @@
 (library
- (name crossterml))
+ (name crossterml)
+ (libraries str))
