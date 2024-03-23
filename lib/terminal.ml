@@ -9,25 +9,25 @@ type clear_type =
   | UntilNewLine
 
 (** Disables line wrapping. *)
-let disable_line_wrap = Ansi.write_ansi "?7l"
+let disable_line_wrap = Ansi.escape "?7l"
 
 (** Enables line wrapping. *)
-let enable_line_wrap = Ansi.write_ansi "?7h"
+let enable_line_wrap = Ansi.escape "?7h"
 
 (** A command that switches to the alternate screen buffer. *)
-let enter_alternate_screen = Ansi.write_ansi "?1049h"
+let enter_alternate_screen = Ansi.escape "?1049h"
 
 (** A command that switches back from the alternate screen buffer. *)
-let leave_alternate_screen = Ansi.write_ansi "?1049l"
+let leave_alternate_screen = Ansi.escape "?1049l"
 
 (** A command that scrolls the terminal up a given number of rows. *)
-let scroll_up n = Printf.sprintf "%dS" n |> Ansi.write_ansi
+let scroll_up n = Printf.sprintf "%dS" n |> Ansi.escape
 
 (** A command that scrolls the terminal down a given number of rows. *)
-let scroll_down n = Printf.sprintf "%dT" n |> Ansi.write_ansi
+let scroll_down n = Printf.sprintf "%dT" n |> Ansi.escape
 
 (** A command that sets the terminal buffer size (columns, rows). *)
-let set_size cols rows = Printf.sprintf "8;%d;%dt" rows cols |> Ansi.write_ansi
+let set_size cols rows = Printf.sprintf "8;%d;%dt" rows cols |> Ansi.escape
 
 (** A command that sets the terminal title. *)
 let set_title title = Printf.sprintf "\x1b]0;%s\x07" title |> print_string
@@ -43,7 +43,7 @@ previous frame until the application is ready to render the next frame.
 
 Disabling synchronous update will cause the terminal to render the screen
 as soon as possible. *)
-let begin_sync_update = Ansi.write_ansi "?2026h"
+let begin_sync_update = Ansi.escape "?2026h"
 
 (** A command that tells the terminal to end a synchronous update.
 
@@ -56,7 +56,7 @@ previous frame until the application is ready to render the next frame.
 
 Disabling synchronous update will cause the terminal to render the screen
 as soon as possible. *)
-let end_sync_update = Ansi.write_ansi "?2026l"
+let end_sync_update = Ansi.escape "?2026l"
 
 (** A command that clears the terminal screen buffer. 
 [clear_type] specifies the type of clear to perform.
@@ -68,9 +68,9 @@ let end_sync_update = Ansi.write_ansi "?2026l"
 - [UntilNewLine] clears from the cursor until the new line. *)
 let clear_screen clear_type =
   match clear_type with
-  | All -> Ansi.write_ansi "2J"
-  | Purge -> Ansi.write_ansi "3J"
-  | FromCursorDown -> Ansi.write_ansi "J"
-  | FromCursorUp -> Ansi.write_ansi "1J"
-  | CurrentLine -> Ansi.write_ansi "2K"
-  | UntilNewLine -> Ansi.write_ansi "1K"
+  | All -> Ansi.escape "2J"
+  | Purge -> Ansi.escape "3J"
+  | FromCursorDown -> Ansi.escape "J"
+  | FromCursorUp -> Ansi.escape "1J"
+  | CurrentLine -> Ansi.escape "2K"
+  | UntilNewLine -> Ansi.escape "1K"
