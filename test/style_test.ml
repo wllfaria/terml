@@ -7,19 +7,18 @@ let format_color_option color =
   | Some Yellow -> "Yellow"
   | Some Red -> "Red"
   | Some (Rgb (r, g, b)) -> Printf.sprintf "Rgb(%d,%d,%d)" r g b
-  | Some (Hex hex) -> Printf.sprintf "Hex(%s)" hex
   | _ -> "Invalid"
 
 let format_styled styled =
   Format.sprintf "fg: %s, bg: %s, bold: %b"
-    (format_color_option styled.fg_color)
-    (format_color_option styled.bg_color)
+    (format_color_option styled.fg)
+    (format_color_option styled.bg)
     styled.bold
 
 let build_string_with_style () =
   Alcotest.(check string)
     "from string to styled" "fg: Red, bg: Yellow, bold: true"
-    (empty |> bold |> fg_color Red |> bg_color Yellow |> format_styled)
+    (styled |> bold |> fg Red |> bg Yellow |> format_styled)
 
 let tests =
   [

@@ -41,4 +41,3 @@ val show : unit -> commands
 val enable_blinking : unit -> commands
 val disable_blinking : unit -> commands
 val set_style : cursor_style -> commands
-val run : commands list -> unit

@@ -1,8 +1,8 @@
-(* let () = [ hide (); move_to 10 10; set_style BlinkingBar; show () ] |> run *)
-
 open Crossterml
+open Style
 
-let bold s = "1;" ^ s
-let orange s = "5;9" ^ s "Hello World" |> set_foreground_color Color.Yellow
-
-(* "asda" |> bold |> *)
+let () =
+  print_endline @@ make "lol" @@ bold @@ italic @@ underline @@ blink @@ crossed
+  @@ fg (Color.Rgb (255, 0, 0))
+  @@ bg (Color.from "#00ff00")
+  @@ overline @@ styled

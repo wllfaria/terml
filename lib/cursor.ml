@@ -44,7 +44,7 @@ let enable_blinking () = EnableBlinking
 let disable_blinking () = DisableBlinking
 let set_style style = SetStyle style
 
-let execute command =
+let _execute command =
   match command with
   | MoveTo (x, y) -> escape (Printf.sprintf "%d;%dH" x y)
   | NextLine -> escape "1E"
@@ -70,7 +70,3 @@ let execute command =
       | SteadyUnderscore -> escape "4 q"
       | BlinkingBar -> escape "5 q"
       | SteadyBar -> escape "6 q")
-
-let run commands =
-  List.iter execute commands;
-  ()

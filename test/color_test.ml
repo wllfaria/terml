@@ -1,75 +1,49 @@
-open Crossterml
-
-let string_of_rgb () =
-  Alcotest.(check string)
-    "from rgb to string" "rgb(255, 0, 0)"
-    (Color.string_of_color (Color.Rgb (255, 0, 0)))
-
-let string_of_color () =
-  Alcotest.(check string)
-    "from color to string" "black"
-    (Color.string_of_color Color.Black)
-
-let string_of_hex () =
-  Alcotest.(check string)
-    "from hex to string" "#ff0000"
-    (Color.string_of_color (Color.Hex "#ff0000"))
+open Crossterml.Color
 
 let format_color color =
   match color with
-  | Color.Black -> "Black"
-  | Color.Rgb (r, g, b) -> Printf.sprintf "Rgb(%d,%d,%d)" r g b
-  | Color.Hex hex -> Printf.sprintf "Hex(%s)" hex
+  | Black -> "Black"
+  | Rgb (r, g, b) -> Printf.sprintf "Rgb(%d,%d,%d)" r g b
   | _ -> "Invalid"
 
-let color_testable =
-  let open Alcotest in
-  let pp fmt color =
-    let print_color = format_color color in
-    Format.fprintf fmt "%s" print_color
-  in
-  testable pp ( = )
+let test_color_of_string () =
+  Alcotest.(check string)
+    "from color string to color" (format_color Black)
+    (format_color (from "black"))
 
-let color_of_string () =
-  Alcotest.(check (result color_testable string))
-    "from color string to color" (Ok Color.Black)
-    (Color.color_of_string "black")
-
-let color_of_hex_string () =
-  Alcotest.(check (result color_testable string))
-    "from hex string to color" (Ok (Color.Hex "ff0000"))
-    (Color.color_of_string "#ff0000")
-
-let color_of_rgb_string () =
-  Alcotest.(check (result color_testable string))
+let test_color_of_rgb () =
+  Alcotest.(check string)
     "from rgb string to color"
-    (Ok (Color.Rgb (255, 0, 0)))
-    (Color.color_of_string "rgb(255, 0, 0)")
+    (format_color (Rgb (255, 0, 0)))
+    (format_color (from "rgb(255, 0, 0)"))
 
-let color_of_reset_string () =
-  Alcotest.(check (result color_testable string))
-    "from reset string to color" (Ok Color.Reset)
-    (Color.color_of_string "reset")
+let test_color_of_hex () =
+  Alcotest.(check string)
+    "from hex string to color"
+    (format_color (Rgb (255, 0, 0)))
+    (format_color (from "#ff0000"))
 
-let error_of_invalid () =
-  Alcotest.(check (result color_testable string))
-    "from invalid string to error" (Error "Invalid color")
-    (Color.color_of_string "invalid")
+let raise_with_invalid_hex () =
+  Alcotest.check_raises "raise with invalid hex" (Invalid_color_format "ff000")
+    (fun () -> ignore (from "#ff000"))
 
-let invalid_rgb_error () =
-  Alcotest.(check (result color_testable string))
-    "from invalid rgb string to error" (Error "Invalid rgb color")
-    (Color.color_of_string "rgb(1234, 1, 1)")
+let raise_with_invalid_rgb () =
+  Alcotest.check_raises "raise with invalid rgb"
+    (Invalid_color_format "rgb(255, 0, 0") (fun () ->
+      ignore (from "rgb(255, 0, 0"))
+
+let raise_with_invalid_rgb_val () =
+  Alcotest.check_raises "raise with invalid rgb value range"
+    (Invalid_color_range "rgb(300, 0, 0)") (fun () ->
+      ignore (from "rgb(300, 0, 0)"))
 
 let tests =
   [
-    Alcotest.test_case "From rgb to string" `Quick string_of_rgb;
-    Alcotest.test_case "From color to string" `Quick string_of_color;
-    Alcotest.test_case "From hex to string" `Quick string_of_hex;
-    Alcotest.test_case "from color string to color" `Quick color_of_string;
-    Alcotest.test_case "from rgb string to color" `Quick color_of_rgb_string;
-    Alcotest.test_case "from hex string to color" `Quick color_of_hex_string;
-    Alcotest.test_case "from invalid string to error" `Quick error_of_invalid;
-    Alcotest.test_case "from invalid rgb to error" `Quick invalid_rgb_error;
-    Alcotest.test_case "from reset string to color" `Quick color_of_reset_string;
+    Alcotest.test_case "from color string to color" `Quick test_color_of_string;
+    Alcotest.test_case "from rgb string to color" `Quick test_color_of_rgb;
+    Alcotest.test_case "from hex string to color" `Quick test_color_of_hex;
+    Alcotest.test_case "raise with invalid hex" `Quick raise_with_invalid_hex;
+    Alcotest.test_case "raise with invalid rgb" `Quick raise_with_invalid_rgb;
+    Alcotest.test_case "raise with invalid rgb range" `Quick
+      raise_with_invalid_rgb_val;
   ]

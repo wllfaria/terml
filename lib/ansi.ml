@@ -11,4 +11,4 @@ let strike = "9"
 let foreground = "38"
 let background = "48"
 let overline = "53"
-let escape fmt = Printf.printf "%s%s" csi fmt
+let escape fmt = Printf.sprintf "%s%s" csi fmt
