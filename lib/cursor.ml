@@ -1,3 +1,5 @@
+open Ansi
+
 type cursor_style =
   | Default
   | BlinkingBlock
@@ -25,29 +27,50 @@ type commands =
   | Left of int
   | SetStyle of cursor_style
 
-let move command =
+let move_to x y = MoveTo (x, y)
+let next_line () = NextLine
+let previous_line () = PreviousLine
+let to_column x = ToColumn x
+let to_row y = ToRow y
+let up n = Up n
+let right n = Right n
+let down n = Down n
+let left n = Left n
+let save_position () = SavePosition
+let restore_position () = RestorePosition
+let hide () = Hide
+let show () = Show
+let enable_blinking () = EnableBlinking
+let disable_blinking () = DisableBlinking
+let set_style style = SetStyle style
+
+let execute command =
   match command with
-  | MoveTo (x, y) -> Ansi.write_ansi (Printf.sprintf "%d;%dH" x y)
-  | NextLine -> Ansi.write_ansi "1E"
-  | PreviousLine -> Ansi.write_ansi "1F"
-  | ToColumn x -> Ansi.write_ansi (Printf.sprintf "%dG" (x + 1))
-  | ToRow y -> Ansi.write_ansi (Printf.sprintf "%dd" (y + 1))
-  | Up n -> Ansi.write_ansi (Printf.sprintf "%dA" (n + 1))
-  | Right n -> Ansi.write_ansi (Printf.sprintf "%dC" (n + 1))
-  | Down n -> Ansi.write_ansi (Printf.sprintf "%dB" (n + 1))
-  | Left n -> Ansi.write_ansi (Printf.sprintf "%dD" (n + 1))
-  | SavePosition -> Ansi.write_ansi "7"
-  | RestorePosition -> Ansi.write_ansi "8"
-  | Hide -> Ansi.write_ansi "?25l"
-  | Show -> Ansi.write_ansi "?25h"
-  | EnableBlinking -> Ansi.write_ansi "?12h"
-  | DisableBlinking -> Ansi.write_ansi "?12l"
+  | MoveTo (x, y) -> escape (Printf.sprintf "%d;%dH" x y)
+  | NextLine -> escape "1E"
+  | PreviousLine -> escape "1F"
+  | ToColumn x -> escape (Printf.sprintf "%dG" (x + 1))
+  | ToRow y -> escape (Printf.sprintf "%dd" (y + 1))
+  | Up n -> escape (Printf.sprintf "%dA" (n + 1))
+  | Right n -> escape (Printf.sprintf "%dC" (n + 1))
+  | Down n -> escape (Printf.sprintf "%dB" (n + 1))
+  | Left n -> escape (Printf.sprintf "%dD" (n + 1))
+  | SavePosition -> escape "7"
+  | RestorePosition -> escape "8"
+  | Hide -> escape "?25l"
+  | Show -> escape "?25h"
+  | EnableBlinking -> escape "?12h"
+  | DisableBlinking -> escape "?12l"
   | SetStyle style -> (
       match style with
-      | Default -> Ansi.write_ansi "0 q"
-      | BlinkingBlock -> Ansi.write_ansi "1 q"
-      | SteadyBlock -> Ansi.write_ansi "2 q"
-      | BlinkingUnderscore -> Ansi.write_ansi "3 q"
-      | SteadyUnderscore -> Ansi.write_ansi "4 q"
-      | BlinkingBar -> Ansi.write_ansi "5 q"
-      | SteadyBar -> Ansi.write_ansi "6 q")
+      | Default -> escape "0 q"
+      | BlinkingBlock -> escape "1 q"
+      | SteadyBlock -> escape "2 q"
+      | BlinkingUnderscore -> escape "3 q"
+      | SteadyUnderscore -> escape "4 q"
+      | BlinkingBar -> escape "5 q"
+      | SteadyBar -> escape "6 q")
+
+let run commands =
+  List.iter execute commands;
+  ()
