@@ -23,6 +23,11 @@ let test_color_of_hex () =
     (format_color (Rgb (255, 0, 0)))
     (format_color (from "#ff0000"))
 
+let test_color_of_ansii () =
+  Alcotest.(check string)
+    "from ansii string to color" (format_color Red)
+    (format_color (from "\x1b[5;9"))
+
 let raise_with_invalid_hex () =
   Alcotest.check_raises "raise with invalid hex" (Invalid_color_format "ff000")
     (fun () -> ignore (from "#ff000"))
@@ -42,6 +47,7 @@ let tests =
     Alcotest.test_case "from color string to color" `Quick test_color_of_string;
     Alcotest.test_case "from rgb string to color" `Quick test_color_of_rgb;
     Alcotest.test_case "from hex string to color" `Quick test_color_of_hex;
+    Alcotest.test_case "from ansii string to color" `Quick test_color_of_ansii;
     Alcotest.test_case "raise with invalid hex" `Quick raise_with_invalid_hex;
     Alcotest.test_case "raise with invalid rgb" `Quick raise_with_invalid_rgb;
     Alcotest.test_case "raise with invalid rgb range" `Quick

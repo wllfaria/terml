@@ -20,9 +20,6 @@ type t =
 exception Invalid_color_format of string
 exception Invalid_color_range of string
 
-let is_ansi_color_disabled () =
-  match Sys.getenv_opt "NO_COLOR" with Some _ -> true | None -> false
-
 let to_255 str =
   match int_of_string_opt ("0x" ^ str) with
   | None -> raise (Invalid_color_format str)
@@ -60,6 +57,38 @@ let color_of_rgb s =
         | _ -> raise (Invalid_color_format s)))
   | _ -> raise (Invalid_color_format s)
 
+let color_of_ansii s =
+  let sub = String.sub s 2 (String.length s - 2) in
+  match String.get sub 0 with
+  | '5' -> (
+      let slices = String.split_on_char ';' s in
+      let c = int_of_string (List.nth slices 1) in
+      match c with
+      | 0 -> Black
+      | 1 -> DarkRed
+      | 2 -> DarkGreen
+      | 3 -> DarkYellow
+      | 4 -> DarkBlue
+      | 5 -> DarkMagenta
+      | 6 -> DarkCyan
+      | 7 -> Grey
+      | 8 -> DarkGrey
+      | 9 -> Red
+      | 10 -> Green
+      | 11 -> Yellow
+      | 12 -> Blue
+      | 13 -> Magenta
+      | 14 -> Cyan
+      | 15 -> White
+      | _ -> raise (Invalid_color_format sub))
+  | '2' ->
+      let slices = String.split_on_char ';' s in
+      let r = int_of_string (List.nth slices 1) in
+      let g = int_of_string (List.nth slices 2) in
+      let b = int_of_string (List.nth slices 3) in
+      Rgb (r, g, b)
+  | _ -> raise (Invalid_color_format sub)
+
 let color_of_string s =
   let s = String.lowercase_ascii s in
   match s with
@@ -81,57 +110,30 @@ let color_of_string s =
   | "grey" -> Grey
   | s when String.get s 0 = '#' -> color_of_hex s
   | s when String.starts_with s ~prefix:"rgb(" -> color_of_rgb s
+  | s when String.starts_with s ~prefix:"\x1b[" -> color_of_ansii s
   | _ -> raise (Invalid_color_format s)
-
-let from s = color_of_string s
-
-let color_of_ansii s =
-  match String.get s 0 with
-  | '5' -> (
-      let slices = String.split_on_char ';' s in
-      let c = int_of_string (List.nth slices 1) in
-      match c with
-      | 0 -> Ok Black
-      | 1 -> Ok DarkRed
-      | 2 -> Ok DarkGreen
-      | 3 -> Ok DarkYellow
-      | 4 -> Ok DarkBlue
-      | 5 -> Ok DarkMagenta
-      | 6 -> Ok DarkCyan
-      | 7 -> Ok Grey
-      | 8 -> Ok DarkGrey
-      | 9 -> Ok Red
-      | 10 -> Ok Green
-      | 11 -> Ok Yellow
-      | 12 -> Ok Blue
-      | 13 -> Ok Magenta
-      | 14 -> Ok Cyan
-      | 15 -> Ok White
-      | _ -> Error "Invalid ansii sequence")
-  | '2' ->
-      let slices = String.split_on_char ';' s in
-      let r = int_of_string (List.nth slices 1) in
-      let g = int_of_string (List.nth slices 2) in
-      let b = int_of_string (List.nth slices 3) in
-      Ok (Rgb (r, g, b))
-  | _ -> Error "Invalid ansii sequence"
 
 let ansii_of_color c =
   match c with
-  | Black -> "0"
-  | DarkRed -> "1"
-  | DarkGreen -> "2"
-  | DarkYellow -> "3"
-  | DarkBlue -> "4"
-  | DarkMagenta -> "5"
-  | DarkCyan -> "6"
-  | Grey -> "7"
-  | DarkGrey -> "8"
-  | Red -> "9"
-  | Green -> "10"
-  | Yellow -> "11"
-  | Blue -> "12"
-  | Magenta -> "13"
-  | Cyan -> "14"
-  | White -> "15"
+  | Black -> "5;0"
+  | DarkRed -> "5;1"
+  | DarkGreen -> "5;2"
+  | DarkYellow -> "5;3"
+  | DarkBlue -> "5;4"
+  | DarkMagenta -> "5;5"
+  | DarkCyan -> "5;6"
+  | Grey -> "5;7"
+  | DarkGrey -> "5;8"
+  | Red -> "5;9"
+  | Green -> "5;10"
+  | Yellow -> "5;11"
+  | Blue -> "5;12"
+  | Magenta -> "5;13"
+  | Cyan -> "5;14"
+  | White -> "5;15"
   | Rgb (r, g, b) -> Printf.sprintf "2;%d;%d;%d" r g b
+
+let from s = color_of_string s
+
+let is_ansi_color_disabled () =
+  match Sys.getenv_opt "NO_COLOR" with Some _ -> true | None -> false

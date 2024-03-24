@@ -15,12 +15,23 @@ let format_styled styled =
     (format_color_option styled.bg)
     styled.bold
 
-let build_string_with_style () =
+let test_build_styled () =
   Alcotest.(check string)
-    "from string to styled" "fg: Red, bg: Yellow, bold: true"
+    "build styled" "fg: Red, bg: Yellow, bold: true"
     (styled |> bold |> fg Red |> bg Yellow |> format_styled)
+
+let test_make_styled_string () =
+  Alcotest.(check string)
+    "make styled string" "\x1b[38;5;9mHello World!"
+    (make "Hello World!" @@ fg Red @@ styled)
+
+let raises_with_invalid_color () =
+  Alcotest.check_raises "raises with invalid color"
+    (Invalid_argument "Invalid color") (fun () ->
+      ignore (styled |> fg Red |> make "Hello World!"))
 
 let tests =
   [
-    Alcotest.test_case "build_string_with_style" `Quick build_string_with_style;
+    Alcotest.test_case "build styled" `Quick test_build_styled;
+    Alcotest.test_case "make styled string" `Quick test_make_styled_string;
   ]
