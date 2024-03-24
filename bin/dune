@@ -1,4 +1,4 @@
 (executable
- (public_name crossterml)
+ (public_name terml)
  (name main)
- (libraries crossterml))
+ (libraries terml))

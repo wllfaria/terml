@@ -1,4 +1,17 @@
-open Crossterml
+open Terml
+open Command
 open Style
 
-let () = print_endline @@ make "lol" @@ fg (Color.from "\x1b[5;9") @@ styled
+let s = bold @@ italic @@ styled ~text:(Some "hello") ()
+
+let () =
+  flush
+  @@ queue
+       [
+         SetForegroundColor Red;
+         Cursor (Cursor.MoveTo (10, 10));
+         SetAttributes [ Bg Color.Green; Fg (Color.from "#ff00ff") ];
+         PrintStyled s;
+         Cursor (Cursor.MoveTo (20, 10));
+         PrintStyled s;
+       ]

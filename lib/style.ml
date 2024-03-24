@@ -12,6 +12,7 @@ type t =
   | Bg of Color.t
 
 type styled = {
+  text : string;
   fg : Color.t option;
   bg : Color.t option;
   underline_color : Color.t option;
@@ -26,8 +27,9 @@ type styled = {
   overline : bool;
 }
 
-let styled =
+let styled ?(text = None) () =
   {
+    text = (match text with Some s -> s | None -> "");
     fg = None;
     bg = None;
     underline_color = None;

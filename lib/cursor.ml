@@ -9,7 +9,7 @@ type cursor_style =
   | BlinkingBar
   | SteadyBar
 
-type commands =
+type t =
   | Hide
   | Show
   | NextLine
@@ -44,7 +44,7 @@ let enable_blinking () = EnableBlinking
 let disable_blinking () = DisableBlinking
 let set_style style = SetStyle style
 
-let _execute command =
+let execute command =
   match command with
   | MoveTo (x, y) -> escape (Printf.sprintf "%d;%dH" x y)
   | NextLine -> escape "1E"

@@ -7,7 +7,7 @@ type cursor_style =
   | BlinkingBar
   | SteadyBar
 
-type commands = private
+type t =
   | Hide
   | Show
   | NextLine
@@ -25,19 +25,20 @@ type commands = private
   | Left of int
   | SetStyle of cursor_style
 
-val move_to : int -> int -> commands
-val next_line : unit -> commands
-val previous_line : unit -> commands
-val to_column : int -> commands
-val to_row : int -> commands
-val up : int -> commands
-val right : int -> commands
-val down : int -> commands
-val left : int -> commands
-val save_position : unit -> commands
-val restore_position : unit -> commands
-val hide : unit -> commands
-val show : unit -> commands
-val enable_blinking : unit -> commands
-val disable_blinking : unit -> commands
-val set_style : cursor_style -> commands
+val move_to : int -> int -> t
+val next_line : unit -> t
+val previous_line : unit -> t
+val to_column : int -> t
+val to_row : int -> t
+val up : int -> t
+val right : int -> t
+val down : int -> t
+val left : int -> t
+val save_position : unit -> t
+val restore_position : unit -> t
+val hide : unit -> t
+val show : unit -> t
+val enable_blinking : unit -> t
+val disable_blinking : unit -> t
+val set_style : cursor_style -> t
+val execute : t -> string

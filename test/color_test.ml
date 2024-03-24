@@ -1,4 +1,4 @@
-open Crossterml.Color
+open Terml.Color
 
 let format_color color =
   match color with

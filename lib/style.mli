@@ -1,4 +1,4 @@
-type t = private
+type t =
   | Bold
   | Faint
   | Italic
@@ -12,6 +12,7 @@ type t = private
   | Bg of Color.t
 
 type styled = private {
+  text : string;
   fg : Color.t option;
   bg : Color.t option;
   underline_color : Color.t option;
@@ -26,7 +27,7 @@ type styled = private {
   overline : bool;
 }
 
-val styled : styled
+val styled : ?text:string option -> unit -> styled
 val make_sequence : styled -> t list
 val fg : Color.t -> styled -> styled
 val bg : Color.t -> styled -> styled
@@ -41,3 +42,4 @@ val crossed : styled -> styled
 val overline : styled -> styled
 val underline_color : Color.t -> styled -> styled
 val make : string -> styled -> string
+val to_ansii : t -> string
