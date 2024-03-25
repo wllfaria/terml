@@ -90,4 +90,4 @@ let to_ansii s =
 let make text s =
   let seq = make_sequence s in
   let fmt = List.map to_ansii seq |> String.concat ";" in
-  Ansi.escape fmt ^ "m" ^ text
+  Ansi.escape fmt ^ "m" ^ text ^ Ansi.escape Ansi.reset ^ "m"
