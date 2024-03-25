@@ -6,22 +6,6 @@ type t = Key of key_event
 let handle_csi_key key =
   match key with _ -> Key { code = Escape; modifier = None }
 
-(** [handle_arrow_or_function ()] handles the case where we may have an arrow or function key.
-
-    This function reads the next key from the input source and determines if it's an arrow or function key.
-    If it's an arrow or function key, it returns the key event with the corresponding code.
-    If it's not an arrow or function key, it returns the key event with the escape code.
-*)
-let handle_arrow_or_function (module I : Input_source.t) =
-  (* we read another key, as it will always be a `;` after \x1b[0 *)
-  ignore @@ I.read ();
-  match I.read () with
-  | `Read "A" -> Key { code = Up; modifier = None }
-  | `Read "B" -> Key { code = Down; modifier = None }
-  | `Read "C" -> Key { code = Right; modifier = None }
-  | `Read "D" -> Key { code = Left; modifier = None }
-  | _ -> Key { code = Escape; modifier = None }
-
 (** [handle_csi ()] handles the case where we have a control sequence introducer.
 
     This function decides what to do next based on the next key read from the input source.
@@ -31,12 +15,11 @@ let handle_arrow_or_function (module I : Input_source.t) =
 let handle_csi (module I : Input_source.t) =
   match I.read () with
   | `Read "[" -> (
-      (* we found a `[` after the csi, and now there are two possibilities:
-         - `0` means we have an arrow or function key;
-         - ...
-      *)
       match I.read () with
-      | `Read "0" -> handle_arrow_or_function (module I)
+      | `Read "A" -> Key { code = Up; modifier = None }
+      | `Read "B" -> Key { code = Down; modifier = None }
+      | `Read "C" -> Key { code = Right; modifier = None }
+      | `Read "D" -> Key { code = Left; modifier = None }
       | `Read key -> handle_csi_key key
       | _ -> Key { code = Escape; modifier = None })
   | _ -> Key { code = Escape; modifier = None }

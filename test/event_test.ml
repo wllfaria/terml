@@ -1,5 +1,5 @@
 open Terml.Virtual_input
-open Terml.Io
+open Terml.Events
 
 let pp e =
   match e with
