@@ -1,5 +1,4 @@
 (lang dune 3.14)
-(using mdx 0.4)
 
 (name terml)
 
@@ -14,14 +13,15 @@
 
 (license MIT)
 
+(version 0.0.1)
+
 (package
  (name terml)
- (synopsis "Terml is a pure-ocaml library for manipulating terminal output. Making possible to write text-based interfaces with ease.")
- (description "Terml is a pure-ocaml library for manipulating terminal output. Making possible to write text-based interfaces with ease.")
+ (synopsis "Terml is a pure-ocaml library for manipulating terminal output. Making possible to write text-based interfaces with ease")
+ (description "Terml is a pure-ocaml library for manipulating terminal output. Making possible to write text-based interfaces with ease")
  (depends 
    (ocaml  (>= "5.1"))
-   (uutf (>= "1.0.3"))
-   threads)
+   (uutf (>= "1.0.3")))
  (tags
    (tui terminal "terminal-tui")))
 

@@ -15,25 +15,25 @@ let pp e =
   | _ -> "Unknown"
 
 let test_arrow_up () =
-  enqueue [ "\x1b"; "["; "0"; ";"; "A" ];
+  enqueue [ "\x1b"; "["; "A" ];
   Alcotest.(check string)
     "capture arrow up" "up"
     (pp (next_event (module Terml.Virtual_input.Virtual)))
 
 let test_arrow_down () =
-  enqueue [ "\x1b"; "["; "0"; ";"; "B" ];
+  enqueue [ "\x1b"; "["; "B" ];
   Alcotest.(check string)
     "capture arrow down" "down"
     (pp (next_event (module Terml.Virtual_input.Virtual)))
 
 let test_arrow_right () =
-  enqueue [ "\x1b"; "["; "0"; ";"; "C" ];
+  enqueue [ "\x1b"; "["; "C" ];
   Alcotest.(check string)
     "capture arrow right" "right"
     (pp (next_event (module Terml.Virtual_input.Virtual)))
 
 let test_arrow_left () =
-  enqueue [ "\x1b"; "["; "0"; ";"; "D" ];
+  enqueue [ "\x1b"; "["; "D" ];
   Alcotest.(check string)
     "capture arrow left" "left"
     (pp (next_event (module Terml.Virtual_input.Virtual)))

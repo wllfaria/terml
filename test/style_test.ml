@@ -22,7 +22,7 @@ let test_build_styled () =
 
 let test_make_styled_string () =
   Alcotest.(check string)
-    "make styled string" "\x1b[38;5;9mHello World!"
+    "make styled string" "\x1b[38;5;9mHello World!\x1b[0m"
     (make "Hello World!" @@ fg Red @@ styled ())
 
 let raises_with_invalid_color () =
