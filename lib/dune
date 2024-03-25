@@ -1,4 +1,4 @@
 (library
  (name terml)
- (libraries str uutf unix threads)
-)
+ (public_name terml)
+ (libraries str uutf unix threads))
