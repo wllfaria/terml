@@ -51,10 +51,10 @@ let execute command =
   | PreviousLine -> escape "1F"
   | ToColumn x -> escape (Printf.sprintf "%dG" (x + 1))
   | ToRow y -> escape (Printf.sprintf "%dd" (y + 1))
-  | Up n -> escape (Printf.sprintf "%dA" (n + 1))
-  | Right n -> escape (Printf.sprintf "%dC" (n + 1))
-  | Down n -> escape (Printf.sprintf "%dB" (n + 1))
-  | Left n -> escape (Printf.sprintf "%dD" (n + 1))
+  | Up n -> escape (Printf.sprintf "%dA" n)
+  | Right n -> escape (Printf.sprintf "%dC" n)
+  | Down n -> escape (Printf.sprintf "%dB" n)
+  | Left n -> escape (Printf.sprintf "%dD" n)
   | SavePosition -> escape "7"
   | RestorePosition -> escape "8"
   | Hide -> escape "?25l"

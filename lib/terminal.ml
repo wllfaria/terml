@@ -1,7 +1,5 @@
 let stdin_fd = Unix.descr_of_in_channel stdin
 
-type window_size = { rows : int; cols : int; width : int; height : int }
-
 type clear_type =
   | All
   | Purge
@@ -9,6 +7,21 @@ type clear_type =
   | FromCursorUp
   | CurrentLine
   | UntilNewLine
+
+type t =
+  | DisableLineWrap
+  | EnableLineWrap
+  | EnterAlternateScreen
+  | LeaveAlternateScreen
+  | ScrollUp of int
+  | ScrollDown of int
+  | SetSize of int * int
+  | SetTitle of string
+  | BeginSyncUpdate
+  | EndSyncUpdate
+  | ClearScreen of clear_type
+
+type window_size = { rows : int; cols : int; width : int; height : int }
 
 (** Disables line wrapping. *)
 let disable_line_wrap = Ansi.escape "?7l"
@@ -23,16 +36,16 @@ let enter_alternate_screen = Ansi.escape "?1049h"
 let leave_alternate_screen = Ansi.escape "?1049l"
 
 (** A command that scrolls the terminal up a given number of rows. *)
-let scroll_up n = Printf.sprintf "%dS" n |> Ansi.escape
+let scroll_up n = Ansi.escape @@ Printf.sprintf "%dS" n
 
 (** A command that scrolls the terminal down a given number of rows. *)
-let scroll_down n = Printf.sprintf "%dT" n |> Ansi.escape
+let scroll_down n = Ansi.escape @@ Printf.sprintf "%dT" n
 
 (** A command that sets the terminal buffer size (columns, rows). *)
-let set_size cols rows = Printf.sprintf "8;%d;%dt" rows cols |> Ansi.escape
+let set_size cols rows = Ansi.escape @@ Printf.sprintf "8;%d;%dt" rows cols
 
 (** A command that sets the terminal title. *)
-let set_title title = Printf.sprintf "\x1b]0;%s\x07" title |> print_string
+let set_title title = Printf.sprintf "\x1b]0;%s\x07" title
 
 (** A command that tells the terminal to begin a synchronous update.
 
@@ -92,3 +105,17 @@ let enable_raw_mode () =
 [termios] is the terminal settings that were previously saved by [enable_raw_mode]. 
 *)
 let disable_raw_mode termios = Unix.tcsetattr stdin_fd Unix.TCSAFLUSH termios
+
+let execute command =
+  match command with
+  | DisableLineWrap -> disable_line_wrap
+  | EnableLineWrap -> enable_line_wrap
+  | EnterAlternateScreen -> enter_alternate_screen
+  | LeaveAlternateScreen -> leave_alternate_screen
+  | ScrollUp n -> scroll_up n
+  | ScrollDown n -> scroll_down n
+  | SetSize (cols, rows) -> set_size cols rows
+  | SetTitle title -> set_title title
+  | BeginSyncUpdate -> begin_sync_update
+  | EndSyncUpdate -> end_sync_update
+  | ClearScreen clear_type -> clear_screen clear_type

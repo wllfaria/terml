@@ -4,6 +4,7 @@ type t =
   | SetAttribute of Style.t
   | SetAttributes of Style.t list
   | Cursor of Cursor.t
+  | Terminal of Terminal.t
   | Print of string
   | PrintStyled of Style.styled
 

@@ -4,6 +4,7 @@ type t =
   | SetAttribute of Style.t
   | SetAttributes of Style.t list
   | Cursor of Cursor.t
+  | Terminal of Terminal.t
   | Print of string
   | PrintStyled of Style.styled
 
@@ -33,19 +34,22 @@ let rec format_command cmd =
   | Print s -> s
   | PrintStyled s -> Style.make s.text s
   | Cursor c -> Cursor.execute c
+  | Terminal c -> Terminal.execute c
 
 let command_queue : t list ref = ref []
 
 let queue cmds =
   List.iter (fun cmd -> command_queue := cmd :: !command_queue) cmds
 
+let execute cmds =
+  List.iter (fun cmd -> print_string @@ format_command cmd) cmds;
+  flush stdout
+
 let flush () =
   List.iter
     (fun cmd -> print_string @@ format_command cmd)
     (List.rev !command_queue);
-  command_queue := []
-
-let execute cmds =
-  List.iter (fun cmd -> print_string @@ format_command cmd) cmds
+  command_queue := [];
+  flush stdout
 
 let clear_queue () = command_queue := []
