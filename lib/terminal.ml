@@ -1,3 +1,5 @@
+let stdin_fd = Unix.descr_of_in_channel stdin
+
 type window_size = { rows : int; cols : int; width : int; height : int }
 
 type clear_type =
@@ -74,3 +76,19 @@ let clear_screen clear_type =
   | FromCursorUp -> Ansi.escape "1J"
   | CurrentLine -> Ansi.escape "2K"
   | UntilNewLine -> Ansi.escape "1K"
+
+(** Enable raw mode for the current terminal.
+Returns the previous terminal settings so that they can be restored later. *)
+let enable_raw_mode () =
+  let termios = Unix.tcgetattr stdin_fd in
+  let new_termios =
+    Unix.
+      { termios with c_icanon = false; c_echo = false; c_vmin = 0; c_vtime = 1 }
+  in
+  Unix.tcsetattr stdin_fd Unix.TCSAFLUSH new_termios;
+  termios
+
+(** Disables raw mode for the current terminal.
+[termios] is the terminal settings that were previously saved by [enable_raw_mode]. 
+*)
+let disable_raw_mode termios = Unix.tcsetattr stdin_fd Unix.TCSAFLUSH termios

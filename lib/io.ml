@@ -1,6 +1,6 @@
 type key_code = Escape | Char of string | Up | Down | Left | Right
-type key_modifiers = Shift | Ctrl | Alt | Super | Hyper | Meta | None
-type key_event = { code : key_code; modifiers : key_modifiers }
+type key_modifiers = Shift | Ctrl | Alt | Super | Hyper | Meta
+type key_event = { code : key_code; modifiers : key_modifiers option }
 type t = Key of key_event
 
 let handle_csi_key key =
@@ -31,10 +31,35 @@ let handle_csi (module I : Input_source.t) =
       | _ -> Key { code = Escape; modifiers = None })
   | _ -> Key { code = Escape; modifiers = None }
 
-let rec poll (module I : Input_source.t) =
+let read () = Input.Input.read ()
+
+let next_event (module I : Input_source.t) =
   match I.read () with
-  | `Read key -> (
-      match key with
-      | "\x1b" -> handle_csi (module I)
-      | c -> Key { code = Char c; modifiers = None })
-  | _ -> poll (module I)
+  | `Read "\x1b" -> None
+  | `Read c -> Some (Key { code = Char c; modifiers = None })
+  | `Retry -> None
+  | _ -> None
+
+let poll () =
+  let channel = Event.new_channel () in
+  let _ =
+    Thread.create
+      (fun () ->
+        while true do
+          let event = next_event (module Input.Input) in
+          match event with
+          | Some ev ->
+              let _ =
+                match ev with
+                | Key { code = Char c; _ } ->
+                    Printf.printf "sending key: %s\n" c;
+                    flush stdout
+                | _ -> ()
+              in
+              let _ = Event.send channel ev in
+              ()
+          | None -> ()
+        done)
+      ()
+  in
+  channel
