@@ -21,7 +21,8 @@
  (description "Terml is a pure-ocaml library for manipulating terminal output. Making possible to write text-based interfaces with ease")
  (depends 
    (ocaml  (>= "5.1"))
-   (uutf (>= "1.0.3")))
+   (uutf (>= "1.0.3"))
+   threads)
  (tags
    (tui terminal "terminal-tui")))
 
